@@ -369,71 +369,68 @@ canvas {
 </div>
 
 <!-- TUTORIAL SCREEN -->
-<div class="overlay" id="tutorial-screen" style="display:none">
-  <h1>HOW TO<br>PLAY</h1>
+<div class="overlay" id="tutorial-screen" style="display:none;justify-content:flex-start;padding:16px;overflow-y:auto;">
+  <h1 style="font-size:48px;margin-bottom:4px;flex-shrink:0;">HOW TO PLAY</h1>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:520px;margin-bottom:24px;text-align:left;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;width:100%;margin-bottom:16px;text-align:left;">
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">YOUR GOAL</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        Eat every glowing green square on the board.<br>
-        Clear them all to breach the next sector.<br>
-        You are VIRUS_X — a rogue program infecting the mainframe.
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#00ff41;letter-spacing:2px;margin-bottom:4px;">YOUR GOAL</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        Eat every glowing green square.<br>
+        Clear them all to advance.<br>
+        You are VIRUS_X — infecting the mainframe.
       </div>
     </div>
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">CONTROLS</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        WASD or ARROW KEYS to move through the maze.<br>
-        SPACE fires a pulse blast — destroys any drone within range.<br>
-        On mobile: swipe to move, tap to blast.
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#00ff41;letter-spacing:2px;margin-bottom:4px;">CONTROLS</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        WASD or ARROWS to move.<br>
+        SPACE = pulse blast.<br>
+        Mobile: swipe to move, tap to blast.
       </div>
     </div>
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#ff2200;letter-spacing:2px;margin-bottom:6px;">HEAT METER</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        The HEAT % top right shows how detected you are.<br>
-        It rises when drones get close to you.<br>
-        Hit 100% and you lose a life instantly.<br>
-        Eating data nodes cools it back down.
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#ff2200;letter-spacing:2px;margin-bottom:4px;">HEAT METER</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        Rises when drones are near you.<br>
+        Hit 100% = lose a life.<br>
+        Eat nodes to cool it down.
       </div>
     </div>
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#ff2200;letter-spacing:2px;margin-bottom:6px;">DRONES</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        Red security drones patrol and hunt you.<br>
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#ff2200;letter-spacing:2px;margin-bottom:4px;">DRONES</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        Red drones hunt you.<br>
         Touch one = lose a life.<br>
-        Blast them with SPACE — they respawn after a few seconds.<br>
-        Each level adds more drones.
+        Blast them with SPACE.
       </div>
     </div>
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#ffff00;letter-spacing:2px;margin-bottom:6px;">SUPER NODES</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        Yellow diamond nodes are worth 50 points each.<br>
-        They also drop your heat by 8% when eaten.<br>
-        Prioritise these when drones are closing in.
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#ffff00;letter-spacing:2px;margin-bottom:4px;">SUPER NODES</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        Yellow diamonds = 50 pts.<br>
+        Also drop your heat by 8%.<br>
+        Grab these when drones are close!
       </div>
     </div>
 
-    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
-      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">SCORING</div>
-      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
-        Normal node = 10 pts<br>
-        Super node = 50 pts<br>
-        Drone blasted = 50 pts<br>
-        Sector cleared = level x 200 pts
+    <div style="border:1px solid #005510;padding:10px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:18px;color:#00ff41;letter-spacing:2px;margin-bottom:4px;">SCORING</div>
+      <div style="font-size:10px;color:#00cc33;line-height:1.7;">
+        Node = 10pts · Super = 50pts<br>
+        Drone blasted = 50pts<br>
+        Sector clear = level × 200pts
       </div>
     </div>
 
   </div>
 
-  <button class="big-btn" onclick="closeTutorial()">▶ GOT IT — LETS BREACH</button>
+  <button class="big-btn" style="flex-shrink:0;margin-bottom:16px;" onclick="closeTutorial()">▶ GOT IT — LETS BREACH</button>
 </div>
 
 <!-- GAME OVER SCREEN -->
