@@ -441,8 +441,8 @@ canvas {
   <div style="font-family:'VT323',monospace;font-size:20px;color:#005510;letter-spacing:2px;margin-bottom:8px;" id="go-hiscore"></div>
   <div style="border:1px solid #005510;padding:10px 20px;margin-bottom:10px;text-align:center;background:#001a06;">
     <div style="font-size:10px;color:#00aa2a;letter-spacing:2px;margin-bottom:4px;">CONTINUE FROM SECTOR <span id="continue-level-gc"></span>?</div>
-    <div style="font-family:'VT323',monospace;font-size:26px;color:#00ff41;margin-bottom:6px;">£0.30</div>
-    <button class="big-btn" onclick="gcContinue()" style="background:#00ff41;color:#000;margin:0;">▶ CONTINUE</button>
+    <div style="font-family:'VT323',monospace;font-size:26px;color:#00ff41;margin-bottom:6px;">£0.59</div>
+    <button class="big-btn" onclick="gcContinue()" style="background:#00ff41;color:#000;margin:0;">▶ CONTINUE — £0.59</button>
   </div>
   <button class="big-btn" onclick="startGame()">↺ RETRY BREACH</button>
   <button class="big-btn secondary" onclick="openShop()">⚡ SHOP UPGRADES</button>
@@ -1241,7 +1241,7 @@ async function gcContinue() {
     const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item: 'continue', price: 0.30, playerId: PLAYER_ID })
+      body: JSON.stringify({ item: 'continue', price: 0.59, playerId: PLAYER_ID })
     });
     const data = await res.json();
     if (data.url) window.location.href = data.url;
