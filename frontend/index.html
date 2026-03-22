@@ -362,6 +362,7 @@ canvas {
     CONSUME DATA NODES ◈ AVOID SECURITY DRONES<br>
     HACK FIREWALLS TO ADVANCE DEEPER
   </p>
+  <div style="font-family:'VT323',monospace;font-size:22px;color:#005510;letter-spacing:3px;margin-bottom:16px;" id="title-hiscore">HI-SCORE: 0</div>
   <button class="big-btn blink" onclick="startGame()">▶ INITIATE BREACH</button>
   <button class="big-btn secondary" onclick="openTutorial()">? HOW TO PLAY</button>
   <button class="big-btn secondary" onclick="openShop()">⚡ SHOP</button>
@@ -440,6 +441,7 @@ canvas {
   <h1 style="color:#ff0000;text-shadow:0 0 8px #ff0000, 0 0 20px rgba(255,0,0,0.4)">SYSTEM<br>PURGED</h1>
   <h2 id="go-score" style="color:#00ff41"></h2>
   <p id="go-msg"></p>
+  <div style="font-family:'VT323',monospace;font-size:20px;color:#005510;letter-spacing:2px;margin-bottom:8px;" id="go-hiscore"></div>
   <button class="big-btn" onclick="startGame()">▶ RETRY BREACH</button>
   <button class="big-btn secondary" onclick="openShop()">⚡ SHOP UPGRADES</button>
 </div>
@@ -499,7 +501,62 @@ canvas {
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────
-const BACKEND_URL = 'https://YOUR-RENDER-APP.onrender.com'; // <-- set this after deploy
+const BACKEND_URL = 'https://grid-crawler-backend.onrender.com';
+
+// ─── PLAYER ID — persists forever in localStorage ─────────
+function getPlayerId() {
+  let id = localStorage.getItem('gc_player_id');
+  if (!id) {
+    id = 'player_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('gc_player_id', id);
+  }
+  return id;
+}
+const PLAYER_ID = getPlayerId();
+
+// Load purchases from MongoDB on page load
+async function loadPurchases() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/purchases/${PLAYER_ID}`);
+    const data = await res.json();
+    for (let item of data.purchases) {
+      applyPurchase(item, false);
+    }
+    if (data.purchases.length > 0) {
+      showFlash('UPGRADES RESTORED: ' + data.purchases.length + ' ACTIVE');
+    }
+  } catch(e) {
+    console.log('Could not load purchases', e);
+  }
+}
+
+function applyPurchase(item, showMessage = true) {
+  if (item === 'shield_core') { lives = Math.max(lives, 4); if(showMessage) showFlash('SHIELD CORE: +1 LIFE!'); }
+  if (item === 'pulse_x3')    { pulseRange = 3;              if(showMessage) showFlash('PULSE RANGE TRIPLED!'); }
+  if (item === 'ghost_mode')  { ghostActive = true; ghostTimer = 30000; if(showMessage) showFlash('GHOST MODE: 30 SEC'); }
+  if (item === 'overclock')   { overclocked = true; moveInterval = 90;  if(showMessage) showFlash('OVERCLOCK ACTIVE!'); }
+}
+
+loadPurchases();
+
+// ─── WAKE UP RENDER immediately on page load ──────────────
+fetch(`${BACKEND_URL}/health`).catch(() => {});
+
+// ─── HI SCORE ─────────────────────────────────────────────
+function getHiScore() {
+  return parseInt(localStorage.getItem('gc_hiscore') || '0');
+}
+function saveHiScore(s) {
+  if (s > getHiScore()) {
+    localStorage.setItem('gc_hiscore', s);
+  }
+}
+function updateHiScoreDisplay() {
+  let h = getHiScore();
+  let el = document.getElementById('title-hiscore');
+  if (el) el.textContent = 'HI-SCORE: ' + h;
+}
+updateHiScoreDisplay();
 
 const COLS = 22, ROWS = 17;
 const CELL = 30;
@@ -777,6 +834,8 @@ function spawnParticles(cx, cy, count, col) {
 function triggerLevelComplete() {
   state = 'levelcomplete';
   score += level * 200;
+  saveHiScore(score);
+  updateHiScoreDisplay();
   document.getElementById('lv-num').textContent = `SECTOR ${level} CLEARED`;
   document.getElementById('lv-msg').innerHTML = `SCORE: ${score}<br><br>DIVING DEEPER — SECURITY INCREASING`;
   document.getElementById('level-screen').style.display = 'flex';
@@ -792,7 +851,12 @@ function nextLevel() {
 
 function gameOver() {
   state = 'gameover';
+  saveHiScore(score);
+  updateHiScoreDisplay();
   document.getElementById('go-score').textContent = `FINAL SCORE: ${score}`;
+  let hi = getHiScore();
+  let goHi = document.getElementById('go-hiscore');
+  if (goHi) goHi.textContent = score >= hi ? '★ NEW HI-SCORE! ★' : 'HI-SCORE: ' + hi;
   document.getElementById('go-msg').innerHTML =
     `SECTOR: ${level} &nbsp;|&nbsp; NODES CONSUMED<br><br>` +
     (score > 2000 ? 'EXCEPTIONAL BREACH — YOU WERE SO CLOSE' : 'VIRUS_X HAS BEEN SCRUBBED') +
@@ -1116,7 +1180,7 @@ async function purchase(item, price) {
     const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item, price })
+      body: JSON.stringify({ item, price, playerId: PLAYER_ID })
     });
     const data = await res.json();
     if (data.url) {
@@ -1125,25 +1189,28 @@ async function purchase(item, price) {
       showFlash('ERROR — TRY AGAIN');
     }
   } catch(e) {
-    // Dev mode fallback — simulate purchase
-    showFlash('BACKEND NOT SET UP YET');
+    showFlash('CONNECTION ERROR — TRY AGAIN');
     console.error(e);
   }
 }
 
-// Handle Stripe return
+// Handle Stripe return — save purchase to MongoDB then apply it
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('success') === 'true') {
   const item = urlParams.get('item');
-  if (item === 'shield_core') { lives += 1; showFlash('SHIELD CORE ACTIVATED!'); }
-  if (item === 'pulse_x3') { pulseRange = 3; showFlash('PULSE RANGE TRIPLED!'); }
-  if (item === 'ghost_mode') { ghostActive = true; ghostTimer = 30000; showFlash('GHOST MODE: 30 SEC'); }
-  if (item === 'overclock') { overclocked = true; showFlash('OVERCLOCK ACTIVE!'); }
-  window.history.replaceState({}, '', '/');
+  const pid = urlParams.get('playerId') || PLAYER_ID;
+  // Save to MongoDB so it persists forever
+  fetch(`${BACKEND_URL}/save-purchase`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ playerId: pid, item })
+  });
+  applyPurchase(item, true);
+  window.history.replaceState({}, '', window.location.pathname);
 }
 if (urlParams.get('cancelled') === 'true') {
   showFlash('PURCHASE CANCELLED');
-  window.history.replaceState({}, '', '/');
+  window.history.replaceState({}, '', window.location.pathname);
 }
 
 // Mobile touch controls
