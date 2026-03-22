@@ -17,8 +17,10 @@ async function connectDB() {
 }
 connectDB().catch(console.error);
 
-const ITEMS = {
-  shield_core: { name: 'Shield Core — Extra Life',            price: 49  },
+const ITEMS = {continue:      { name: 'Continue — Keep Playing',             
+price: 30  },
+  shield_core: 
+{ name: 'Shield Core — Extra Life',            price: 49  },
   pulse_x3:    { name: 'Pulse X3 — Triple Blast Range',       price: 79  },
   ghost_mode:  { name: 'Ghost Mode — 30 Second Invisibility', price: 99  },
   overclock:   { name: 'Overclock — Double Speed',            price: 149 },
