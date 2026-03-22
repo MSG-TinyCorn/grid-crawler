@@ -3,386 +3,1159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pixel Raiders</title>
+<title>GRID CRAWLER — MAINFRAME BREACH</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #000; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-  #arcade-root {
-    background: #000; font-family: 'Press Start 2P', monospace; color: #fff;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 16px; min-height: 640px; position: relative; overflow: hidden; width: 512px;
-  }
-  .scanlines { position: absolute; inset: 0; pointer-events: none; z-index: 50;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); }
-  #game-title { color: #FFD700; font-size: 18px; text-shadow: 0 0 10px #FFD700, 2px 2px 0 #B8860B;
-    margin: 8px 0 4px; letter-spacing: 2px; position: relative; z-index: 10; }
-  .subtitle { font-size: 7px; color: #888; margin-bottom: 12px; position: relative; z-index: 10; }
-  #hud { display: flex; gap: 24px; font-size: 8px; color: #0f0; margin-bottom: 8px; position: relative; z-index: 10; }
-  #hud span { color: #fff; }
-  #canvas-wrap { border: 2px solid #333; position: relative; z-index: 10; box-shadow: 0 0 30px rgba(0,200,255,0.15); }
-  canvas { display: block; background: transparent; }
-  #lives-row { display: flex; gap: 6px; margin: 6px 0; position: relative; z-index: 10; }
-  .life-ship { font-size: 14px; }
-  #msg-overlay { position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; background: rgba(0,0,0,0.88); padding: 20px; }
-  .msg-title { font-size: 16px; color: #FFD700; text-shadow: 0 0 8px #FFD700; margin-bottom: 16px; text-align: center; line-height: 1.8; }
-  .msg-sub { font-size: 7px; color: #aaa; margin-bottom: 20px; text-align: center; line-height: 2.2; }
-  .arcade-btn { font-family: 'Press Start 2P', monospace; font-size: 9px; background: transparent;
-    color: #0ff; border: 2px solid #0ff; padding: 10px 20px; cursor: pointer;
-    text-shadow: 0 0 6px #0ff; transition: all 0.1s; margin: 4px; }
-  .arcade-btn:hover { background: #0ff; color: #000; }
-  .arcade-btn.gold { color: #FFD700; border-color: #FFD700; text-shadow: 0 0 6px #FFD700; }
-  .arcade-btn.gold:hover { background: #FFD700; color: #000; }
-  #payment-overlay { position: absolute; inset: 0; z-index: 45; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; background: rgba(0,0,0,0.95); gap: 12px; padding: 20px; }
-  .coin-box { border: 2px solid #FFD700; padding: 20px 24px; text-align: center; max-width: 360px; width: 100%; }
-  .coin-icon { font-size: 28px; margin-bottom: 8px; display: block; }
-  .coin-title { font-size: 11px; color: #FFD700; margin-bottom: 14px; }
-  #card-element { background: #111; border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: 2px; min-height: 40px; }
-  #card-element.focused { border-color: #0ff; }
-  #pay-now-btn { font-family: 'Press Start 2P', monospace; font-size: 9px; background: #635BFF;
-    color: #fff; border: none; padding: 12px; cursor: pointer; width: 100%; margin-top: 4px; }
-  #pay-now-btn:hover:not(:disabled) { background: #7A73FF; }
-  #pay-now-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-  #payment-msg { font-size: 7px; text-align: center; min-height: 16px; margin-top: 6px; }
-  .stripe-badge { font-size: 6px; color: #444; margin-top: 8px; }
-  #admin-row { display: flex; gap: 8px; align-items: center; width: 100%; max-width: 360px; }
-  #admin-input { font-family: 'Press Start 2P', monospace; font-size: 7px; background: #111;
-    border: 1px solid #333; color: #0f0; padding: 8px 10px; flex: 1; outline: none; }
-  #admin-input:focus { border-color: #0f0; }
-  #admin-input::placeholder { color: #333; }
-  #admin-submit { font-family: 'Press Start 2P', monospace; font-size: 7px; background: transparent;
-    color: #555; border: 1px solid #333; padding: 8px 10px; cursor: pointer; }
-  #admin-submit:hover { border-color: #0f0; color: #0f0; }
-  #admin-msg { font-size: 6px; text-align: center; min-height: 12px; }
-  #wave-banner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    z-index: 35; text-align: center; pointer-events: none; display: none; }
-  #wave-banner .wt { font-size: 20px; color: #FFD700; text-shadow: 0 0 12px #FFD700; }
-  #wave-banner .ws { font-size: 9px; color: #0ff; margin-top: 8px; }
-  #score-flash-layer { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
-  .blink { animation: blink 1s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --g: #00ff41;
+  --gd: #00cc33;
+  --gx: #005510;
+  --gb: #003308;
+  --gr: rgba(0,255,65,0.15);
+  --glow: 0 0 8px #00ff41, 0 0 20px rgba(0,255,65,0.4);
+}
+
+body {
+  background: #000;
+  color: var(--g);
+  font-family: 'Share Tech Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(transparent 0px, transparent 3px, rgba(0,0,0,0.25) 3px, rgba(0,0,0,0.25) 4px);
+  pointer-events:none;
+  z-index:999;
+}
+
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+  pointer-events:none;
+  z-index:998;
+}
+
+#header {
+  width:100%;
+  max-width:660px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 12px 4px;
+  border-bottom: 1px solid var(--gx);
+  flex-shrink:0;
+}
+
+#title-text {
+  font-family: 'VT323', monospace;
+  font-size:28px;
+  color:var(--g);
+  text-shadow: var(--glow);
+  letter-spacing:3px;
+}
+
+#hud {
+  display:flex;
+  gap:24px;
+  font-size:13px;
+}
+
+.hud-item { display:flex; flex-direction:column; align-items:center; }
+.hud-label { color:var(--gd); font-size:10px; letter-spacing:2px; }
+.hud-val { font-family:'VT323',monospace; font-size:26px; color:var(--g); text-shadow:var(--glow); line-height:1; }
+
+#canvas-wrap {
+  position:relative;
+  margin:6px 0 4px;
+}
+
+canvas {
+  display:block;
+  border:1px solid var(--gx);
+  box-shadow: 0 0 30px rgba(0,255,65,0.1);
+}
+
+#footer {
+  width:100%;
+  max-width:660px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:4px 12px 6px;
+  border-top:1px solid var(--gx);
+  font-size:11px;
+  color:var(--gd);
+  flex-shrink:0;
+}
+
+#controls-hint { letter-spacing:1px; }
+
+#shop-btn {
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  color:#000;
+  background:var(--g);
+  border:none;
+  padding:4px 14px;
+  cursor:pointer;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  transition: background 0.1s;
+}
+#shop-btn:hover { background:#fff; }
+
+/* OVERLAYS */
+.overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:500;
+}
+
+.overlay h1 {
+  font-family:'VT323',monospace;
+  font-size:72px;
+  color:var(--g);
+  text-shadow:var(--glow);
+  letter-spacing:6px;
+  line-height:1;
+  margin-bottom:8px;
+  text-align:center;
+}
+
+.overlay h2 {
+  font-family:'VT323',monospace;
+  font-size:38px;
+  color:var(--gd);
+  letter-spacing:3px;
+  margin-bottom:32px;
+  text-align:center;
+}
+
+.overlay p {
+  color:var(--gd);
+  font-size:13px;
+  letter-spacing:1px;
+  line-height:2;
+  text-align:center;
+  margin-bottom:24px;
+}
+
+.big-btn {
+  font-family:'Share Tech Mono',monospace;
+  font-size:15px;
+  color:#000;
+  background:var(--g);
+  border:none;
+  padding:10px 40px;
+  cursor:pointer;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  margin:6px;
+  transition:background 0.1s, transform 0.1s;
+}
+.big-btn:hover { background:#fff; transform:scale(1.04); }
+.big-btn.secondary { background:transparent; color:var(--g); border:1px solid var(--gx); clip-path:none; }
+.big-btn.secondary:hover { background:var(--gr); color:#fff; }
+
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* SHOP MODAL */
+#shop-modal {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.95);
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:600;
+}
+
+#shop-modal h1 {
+  font-family:'VT323',monospace;
+  font-size:56px;
+  color:var(--g);
+  text-shadow:var(--glow);
+  letter-spacing:6px;
+  margin-bottom:4px;
+}
+
+#shop-modal .sub {
+  color:var(--gd);
+  font-size:11px;
+  letter-spacing:3px;
+  margin-bottom:28px;
+}
+
+.shop-grid {
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:28px;
+}
+
+.shop-card {
+  width:180px;
+  border:1px solid var(--gx);
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  position:relative;
+  background: var(--gb);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.shop-card:hover { border-color:var(--g); background:#002208; }
+
+.shop-card-icon {
+  font-size:36px;
+  line-height:1;
+  filter: drop-shadow(0 0 6px var(--g));
+}
+
+.shop-card-name {
+  font-family:'VT323',monospace;
+  font-size:22px;
+  color:var(--g);
+  letter-spacing:2px;
+  text-align:center;
+}
+
+.shop-card-desc {
+  font-size:10px;
+  color:var(--gd);
+  text-align:center;
+  letter-spacing:1px;
+  line-height:1.6;
+  min-height:40px;
+}
+
+.shop-card-price {
+  font-family:'VT323',monospace;
+  font-size:28px;
+  color:var(--g);
+  text-shadow:var(--glow);
+}
+
+.buy-btn {
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  background:var(--g);
+  color:#000;
+  border:none;
+  padding:6px 20px;
+  cursor:pointer;
+  letter-spacing:2px;
+  clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  transition:background 0.1s;
+  width:100%;
+}
+.buy-btn:hover { background:#fff; }
+
+.shop-close {
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  color:var(--gd);
+  background:transparent;
+  border:1px solid var(--gx);
+  padding:8px 28px;
+  cursor:pointer;
+  letter-spacing:2px;
+}
+.shop-close:hover { border-color:var(--g); color:var(--g); }
+
+.stripe-note {
+  font-size:10px;
+  color:#005510;
+  margin-top:14px;
+  letter-spacing:1px;
+}
+
+/* FLASH MESSAGE */
+#flash {
+  position:fixed;
+  top:60px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--g);
+  color:#000;
+  font-family:'VT323',monospace;
+  font-size:28px;
+  padding:6px 28px;
+  letter-spacing:3px;
+  z-index:700;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.2s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+#lives-display { display:flex; gap:4px; }
+.life-icon { color:var(--g); font-size:14px; }
 </style>
 </head>
 <body>
-<div id="arcade-root">
-  <div class="scanlines"></div>
-  <canvas id="stars-canvas" width="480" height="580" style="position:absolute;top:0;left:0;z-index:1;"></canvas>
-  <div id="game-title">★ PIXEL RAIDERS ★</div>
-  <div class="subtitle">INSERT COIN TO PLAY</div>
+
+<div id="header">
+  <div id="title-text">GRID CRAWLER</div>
   <div id="hud">
-    <div>SCORE: <span id="score-disp">0</span></div>
-    <div>HI: <span id="hi-disp">0</span></div>
-    <div>WAVE: <span id="wave-disp">1</span></div>
-  </div>
-  <div id="canvas-wrap">
-    <canvas id="gc" width="480" height="420"></canvas>
-    <div id="wave-banner"><div class="wt" id="wave-banner-text"></div><div class="ws" id="wave-banner-sub"></div></div>
-    <div id="score-flash-layer"></div>
-  </div>
-  <div id="lives-row"></div>
-
-  <div id="msg-overlay">
-    <div class="msg-title">★ PIXEL RAIDERS ★</div>
-    <div class="msg-sub">DEFEND EARTH FROM THE<br>ALIEN PIXEL ARMADA!<br><br>← → or A D = MOVE<br>SPACE or ↑ = FIRE</div>
-    <button class="arcade-btn gold blink" id="insert-coin-btn">▶ INSERT COIN — £1.00</button>
-    <div style="margin-top:10px;font-size:6px;color:#333;">SECURED BY STRIPE</div>
-  </div>
-
-  <div id="payment-overlay" style="display:none;">
-    <div class="coin-box">
-      <span class="coin-icon">🪙</span>
-      <div class="coin-title">INSERT COIN — £1.00</div>
-      <div id="card-element">Loading secure card form...</div>
-      <button id="pay-now-btn" disabled>▶ PAY £1.00 & PLAY</button>
-      <div id="payment-msg"></div>
-      <div class="stripe-badge">🔒 SECURED BY STRIPE — CARD NEVER TOUCHES THIS SERVER</div>
+    <div class="hud-item">
+      <span class="hud-label">SCORE</span>
+      <span class="hud-val" id="score-disp">0</span>
     </div>
-    <div id="admin-row">
-      <input id="admin-input" type="password" placeholder="HAVE A CODE?" maxlength="30" />
-      <button id="admin-submit">ENTER</button>
+    <div class="hud-item">
+      <span class="hud-label">LEVEL</span>
+      <span class="hud-val" id="level-disp">1</span>
     </div>
-    <div id="admin-msg"></div>
-    <button class="arcade-btn" id="back-btn" style="font-size:7px;">← BACK</button>
+    <div class="hud-item">
+      <span class="hud-label">LIVES</span>
+      <span class="hud-val" id="lives-disp">♦♦♦</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">HEAT</span>
+      <span class="hud-val" id="heat-disp">0%</span>
+    </div>
   </div>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
+<div id="canvas-wrap">
+  <canvas id="c"></canvas>
+</div>
+
+<div id="footer">
+  <span id="controls-hint">WASD / ARROWS — MOVE &nbsp;|&nbsp; SPACE — PULSE BLAST</span>
+  <button id="shop-btn" onclick="openShop()">⚡ UPGRADE SHOP</button>
+</div>
+
+<div id="flash"></div>
+
+<!-- TITLE SCREEN -->
+<div class="overlay" id="title-screen">
+  <h1>GRID<br>CRAWLER</h1>
+  <h2>MAINFRAME BREACH</h2>
+  <p>
+    YOU ARE VIRUS_X — INFILTRATE THE MAINFRAME<br>
+    CONSUME DATA NODES ◈ AVOID SECURITY DRONES<br>
+    HACK FIREWALLS TO ADVANCE DEEPER
+  </p>
+  <button class="big-btn blink" onclick="startGame()">▶ INITIATE BREACH</button>
+  <button class="big-btn secondary" onclick="openTutorial()">? HOW TO PLAY</button>
+  <button class="big-btn secondary" onclick="openShop()">⚡ SHOP</button>
+</div>
+
+<!-- TUTORIAL SCREEN -->
+<div class="overlay" id="tutorial-screen" style="display:none">
+  <h1>HOW TO<br>PLAY</h1>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:520px;margin-bottom:24px;text-align:left;">
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">YOUR GOAL</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        Eat every glowing green square on the board.<br>
+        Clear them all to breach the next sector.<br>
+        You are VIRUS_X — a rogue program infecting the mainframe.
+      </div>
+    </div>
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">CONTROLS</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        WASD or ARROW KEYS to move through the maze.<br>
+        SPACE fires a pulse blast — destroys any drone within range.<br>
+        On mobile: swipe to move, tap to blast.
+      </div>
+    </div>
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#ff2200;letter-spacing:2px;margin-bottom:6px;">HEAT METER</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        The HEAT % top right shows how detected you are.<br>
+        It rises when drones get close to you.<br>
+        Hit 100% and you lose a life instantly.<br>
+        Eating data nodes cools it back down.
+      </div>
+    </div>
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#ff2200;letter-spacing:2px;margin-bottom:6px;">DRONES</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        Red security drones patrol and hunt you.<br>
+        Touch one = lose a life.<br>
+        Blast them with SPACE — they respawn after a few seconds.<br>
+        Each level adds more drones.
+      </div>
+    </div>
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#ffff00;letter-spacing:2px;margin-bottom:6px;">SUPER NODES</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        Yellow diamond nodes are worth 50 points each.<br>
+        They also drop your heat by 8% when eaten.<br>
+        Prioritise these when drones are closing in.
+      </div>
+    </div>
+
+    <div style="border:1px solid #005510;padding:14px;background:#001a06;">
+      <div style="font-family:'VT323',monospace;font-size:22px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;">SCORING</div>
+      <div style="font-size:11px;color:#00cc33;line-height:1.8;">
+        Normal node = 10 pts<br>
+        Super node = 50 pts<br>
+        Drone blasted = 50 pts<br>
+        Sector cleared = level x 200 pts
+      </div>
+    </div>
+
+  </div>
+
+  <button class="big-btn" onclick="closeTutorial()">▶ GOT IT — LETS BREACH</button>
+</div>
+
+<!-- GAME OVER SCREEN -->
+<div class="overlay" id="gameover-screen" style="display:none">
+  <h1 style="color:#ff0000;text-shadow:0 0 8px #ff0000, 0 0 20px rgba(255,0,0,0.4)">SYSTEM<br>PURGED</h1>
+  <h2 id="go-score" style="color:#00ff41"></h2>
+  <p id="go-msg"></p>
+  <button class="big-btn" onclick="startGame()">▶ RETRY BREACH</button>
+  <button class="big-btn secondary" onclick="openShop()">⚡ SHOP UPGRADES</button>
+</div>
+
+<!-- LEVEL COMPLETE SCREEN -->
+<div class="overlay" id="level-screen" style="display:none">
+  <h1>SECTOR<br>BREACHED</h1>
+  <h2 id="lv-num"></h2>
+  <p id="lv-msg"></p>
+  <button class="big-btn blink" onclick="nextLevel()">▶ DEEPER IN</button>
+</div>
+
+<!-- SHOP MODAL -->
+<div id="shop-modal">
+  <h1>UPGRADE<br>SHOP</h1>
+  <div class="sub">TRANSMIT CREDITS — ENHANCE VIRUS_X</div>
+
+  <div class="shop-grid">
+
+    <div class="shop-card">
+      <div class="shop-card-icon">🛡</div>
+      <div class="shop-card-name">SHIELD CORE</div>
+      <div class="shop-card-desc">Extra life on next breach.<br>One-time insurance.</div>
+      <div class="shop-card-price">£0.49</div>
+      <button class="buy-btn" onclick="purchase('shield_core', 0.49)">BUY NOW</button>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-card-icon">⚡</div>
+      <div class="shop-card-name">PULSE X3</div>
+      <div class="shop-card-desc">Triple pulse blast range.<br>Destroy 3 drones at once.</div>
+      <div class="shop-card-price">£0.79</div>
+      <button class="buy-btn" onclick="purchase('pulse_x3', 0.79)">BUY NOW</button>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-card-icon">👁</div>
+      <div class="shop-card-name">GHOST MODE</div>
+      <div class="shop-card-desc">Drones can't see you<br>for 30 seconds.</div>
+      <div class="shop-card-price">£0.99</div>
+      <button class="buy-btn" onclick="purchase('ghost_mode', 0.99)">BUY NOW</button>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-card-icon">🔥</div>
+      <div class="shop-card-name">OVERCLOCK</div>
+      <div class="shop-card-desc">Double move speed<br>for entire run.</div>
+      <div class="shop-card-price">£1.49</div>
+      <button class="buy-btn" onclick="purchase('overclock', 1.49)">BUY NOW</button>
+    </div>
+
+  </div>
+
+  <button class="shop-close" onclick="closeShop()">✕ CLOSE SHOP</button>
+  <div class="stripe-note">🔒 SECURE CHECKOUT VIA STRIPE — ALL PURCHASES FINAL</div>
+</div>
+
 <script>
-const STRIPE_PK = 'pk_live_51T9WBnGVZkl8yJWYqPM7IEPpzClXNRCg8or9Kz1ZBvQA7lVK9nyEgSwXH2T6V8nfhD6ybdcICuNoiGeGy47wLjy6000T78CE48';
-const SERVER = 'https://pixel-raiders-server.onrender.com';
+// ─── CONFIG ───────────────────────────────────────────────
+const BACKEND_URL = 'https://YOUR-RENDER-APP.onrender.com'; // <-- set this after deploy
 
-function hashCode(str){ let h=0; for(let i=0;i<str.length;i++) h=(Math.imul(31,h)+str.charCodeAt(i))|0; return h; }
-const ADMIN_HASH = hashCode('maximisapotato');
+const COLS = 22, ROWS = 17;
+const CELL = 30;
+const W = COLS * CELL, H = ROWS * CELL;
 
-const W=480,H=420;
-const gc=document.getElementById('gc');
-const ctx=gc.getContext('2d');
-let state='title',score=0,hiScore=0,lives=3,wave=1;
-let player,bullets,enemies,enemyBullets,explosions;
-let keys={},lastShot=0,enemyDir=1,enemyMoveTimer=0,enemyShootTimer=0,raf;
-let waveTransitioning=false;
-const PW=28,PH=18,EW=24,EH=18,BW=3,BH=10;
-let stripe,cardElement;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+canvas.width = W;
+canvas.height = H;
 
-function initStripe(){
-  stripe=Stripe(STRIPE_PK);
-  const elements=stripe.elements();
-  cardElement=elements.create('card',{
-    style:{
-      base:{fontFamily:'"Press Start 2P",monospace',fontSize:'11px',color:'#00FF00','::placeholder':{color:'#444'},iconColor:'#0ff'},
-      invalid:{color:'#FF4400'}
-    }
-  });
-  cardElement.mount('#card-element');
-  cardElement.on('ready',()=>{ document.getElementById('pay-now-btn').disabled=false; });
-  cardElement.on('focus',()=>{ document.getElementById('card-element').classList.add('focused'); });
-  cardElement.on('blur',()=>{ document.getElementById('card-element').classList.remove('focused'); });
-}
+// ─── GAME STATE ───────────────────────────────────────────
+let state = 'title';
+let score = 0, level = 1, lives = 3;
+let heat = 0; // "detection heat" - rises as drones spot you
+let playerX, playerY;
+let nodes = [];     // data nodes to eat
+let firewalls = []; // walls blocking paths
+let drones = [];    // security programs
+let pulseActive = false, pulseTimer = 0;
+let ghostActive = false, ghostTimer = 0;
+let overclocked = false;
+let pulseRange = 1;
+let moveTimer = 0, moveInterval = 160;
+let droneTimer = 0, droneInterval = 380;
+let flashParticles = [];
+let keys = {};
+let animId;
+let lastTime = 0;
 
-async function handlePayment(){
-  const btn=document.getElementById('pay-now-btn');
-  const msg=document.getElementById('payment-msg');
-  btn.disabled=true; btn.textContent='● PROCESSING...';
-  msg.style.color='#aaa'; msg.textContent='Contacting payment server...';
-  try {
-    const r=await fetch(SERVER+'/create-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-    const data=await r.json();
-    if(!data.clientSecret) throw new Error('No client secret');
-    msg.textContent='Confirming with Stripe...';
-    const result=await stripe.confirmCardPayment(data.clientSecret,{payment_method:{card:cardElement}});
-    if(result.error){
-      msg.style.color='#FF4400'; msg.textContent='✗ '+result.error.message;
-      btn.disabled=false; btn.textContent='▶ TRY AGAIN';
-    } else if(result.paymentIntent&&result.paymentIntent.status==='succeeded'){
-      msg.style.color='#0f0'; msg.textContent='✓ PAYMENT CONFIRMED!';
-      btn.textContent='✓ PAID';
-      setTimeout(()=>launchGame(),700);
-    } else {
-      msg.style.color='#FF4400'; msg.textContent='✗ PAYMENT NOT CONFIRMED. TRY AGAIN.';
-      btn.disabled=false; btn.textContent='▶ TRY AGAIN';
-    }
-  } catch(e){
-    msg.style.color='#FF4400'; msg.textContent='✗ SERVER ERROR. TRY AGAIN.';
-    btn.disabled=false; btn.textContent='▶ PAY £1.00 & PLAY';
-  }
-}
+// Purchased items (session only — real ones come via Stripe)
+let ownedItems = {};
 
-function launchGame(){
-  document.getElementById('payment-overlay').style.display='none';
-  cancelAnimationFrame(raf); initGame(); raf=requestAnimationFrame(loop);
-}
+// ─── GRID / MAZE ──────────────────────────────────────────
+let grid = []; // 0=open, 1=wall
 
-function initGame(){ score=0;lives=3;wave=1;waveTransitioning=false;spawnWave();state='playing';updateHUD(); }
-
-function spawnWave(){
-  player={x:W/2-PW/2,y:H-50,w:PW,h:PH,invincible:0};
-  bullets=[];enemyBullets=[];explosions=[];enemies=[];
-  for(let r=0;r<4;r++) for(let c=0;c<9;c++)
-    enemies.push({x:48+c*44,y:30+r*36,w:EW,h:EH,type:r<1?2:r<3?1:0,alive:true,anim:0});
-  enemyDir=1;enemyMoveTimer=0;enemyShootTimer=0;
-}
-
-function showWaveBanner(num,cb){
-  waveTransitioning=true;
-  let banner=document.getElementById('wave-banner');
-  document.getElementById('wave-banner-text').textContent='WAVE '+num;
-  document.getElementById('wave-banner-sub').textContent=num===1?'GOOD LUCK!':'INCOMING!';
-  banner.style.display='block';banner.style.opacity='1';
-  setTimeout(()=>{
-    let start=Date.now();
-    let fade=setInterval(()=>{
-      let t=(Date.now()-start)/600;banner.style.opacity=Math.max(0,1-t);
-      if(t>=1){clearInterval(fade);banner.style.display='none';waveTransitioning=false;if(cb)cb();}
-    },16);
-  },1400);
-}
-
-function drawPlayer(p){
-  if(p.invincible>0&&Math.floor(Date.now()/80)%2===0)return;
-  ctx.fillStyle='#00FFFF';
-  ctx.fillRect(p.x+12,p.y,4,4);ctx.fillRect(p.x+8,p.y+4,12,3);
-  ctx.fillRect(p.x+4,p.y+7,20,5);ctx.fillRect(p.x,p.y+12,28,4);
-  ctx.fillRect(p.x,p.y+14,6,4);ctx.fillRect(p.x+22,p.y+14,6,4);
-  ctx.fillStyle='#0088FF';ctx.fillRect(p.x+10,p.y+4,8,3);
-  ctx.fillStyle='#FF4400';
-  ctx.fillRect(p.x+10,p.y+16,4,2);ctx.fillRect(p.x+14,p.y+16,4,2);
-  ctx.fillRect(p.x+2,p.y+16,3,2);ctx.fillRect(p.x+23,p.y+16,3,2);
-}
-
-function drawEnemy(e){
-  let a=e.anim;
-  if(e.type===2){
-    ctx.fillStyle='#FF00FF';
-    if(a===0){ctx.fillRect(e.x+8,e.y,8,4);ctx.fillRect(e.x+4,e.y+4,16,4);ctx.fillRect(e.x,e.y+8,24,4);ctx.fillRect(e.x+4,e.y+12,4,4);ctx.fillRect(e.x+16,e.y+12,4,4);ctx.fillRect(e.x,e.y+4,2,2);ctx.fillRect(e.x+22,e.y+4,2,2);}
-    else{ctx.fillRect(e.x+8,e.y,8,4);ctx.fillRect(e.x+4,e.y+4,16,4);ctx.fillRect(e.x+2,e.y+8,20,4);ctx.fillRect(e.x,e.y+12,6,4);ctx.fillRect(e.x+18,e.y+12,6,4);}
-  } else if(e.type===1){
-    ctx.fillStyle='#00FF88';
-    ctx.fillRect(e.x+4,e.y,4,4);ctx.fillRect(e.x+16,e.y,4,4);ctx.fillRect(e.x,e.y+4,24,4);ctx.fillRect(e.x+4,e.y+8,16,4);ctx.fillRect(e.x+2,e.y+12,6,4);ctx.fillRect(e.x+16,e.y+12,6,4);
-    if(a===0){ctx.fillRect(e.x,e.y+4,2,2);ctx.fillRect(e.x+22,e.y+4,2,2);}else{ctx.fillRect(e.x-2,e.y+8,2,2);ctx.fillRect(e.x+24,e.y+8,2,2);}
-  } else {
-    ctx.fillStyle='#FFAA00';
-    ctx.fillRect(e.x+8,e.y,8,4);ctx.fillRect(e.x+4,e.y+4,16,4);ctx.fillRect(e.x,e.y+8,24,6);ctx.fillRect(e.x+2,e.y+12,8,4);ctx.fillRect(e.x+14,e.y+12,8,4);
-    if(a===0){ctx.fillRect(e.x-2,e.y+10,2,2);ctx.fillRect(e.x+24,e.y+10,2,2);}else{ctx.fillRect(e.x+2,e.y+6,2,2);ctx.fillRect(e.x+20,e.y+6,2,2);}
-  }
-  ctx.fillStyle='#FF2200';ctx.fillRect(e.x+8,e.y+4,3,3);ctx.fillRect(e.x+13,e.y+4,3,3);
-}
-
-function drawExplosion(e){
-  let t=e.t/e.maxT,r=e.r*t;ctx.globalAlpha=1-t;
-  ctx.fillStyle=t<0.3?'#FFFFFF':t<0.6?'#FFFF00':'#FF4400';
-  for(let i=0;i<8;i++){let ang=(i/8)*Math.PI*2,pr=r*(0.5+Math.random()*0.5);ctx.fillRect(e.x+Math.cos(ang)*pr,e.y+Math.sin(ang)*pr,4,4);}
-  ctx.globalAlpha=1;
-}
-
-function loop(ts){
-  if(state!=='playing')return;
-  ctx.clearRect(0,0,W,H);
-  if(!waveTransitioning){
-    let spd=2+wave*0.5;
-    if(keys['ArrowLeft']||keys['a']||keys['A'])player.x=Math.max(0,player.x-spd);
-    if(keys['ArrowRight']||keys['d']||keys['D'])player.x=Math.min(W-player.w,player.x+spd);
-    if((keys[' ']||keys['ArrowUp']||keys['w']||keys['W'])&&ts-lastShot>280){bullets.push({x:player.x+player.w/2-BW/2,y:player.y,vy:-9});lastShot=ts;}
-    bullets.forEach(b=>b.y+=b.vy);
-    enemyBullets.forEach(b=>b.y+=b.vy);
-    if(player.invincible>0)player.invincible--;
-    enemyMoveTimer++;
-    let alive=enemies.filter(e=>e.alive);
-    let mi=Math.max(3,20-wave*2-Math.floor((36-alive.length)/6));
-    if(enemyMoveTimer>=mi){
-      enemyMoveTimer=0;
-      enemies.forEach(e=>{if(e.alive){e.x+=12*enemyDir;e.anim=1-e.anim;}});
-      let minX=Math.min(...alive.map(e=>e.x)),maxX=Math.max(...alive.map(e=>e.x+e.w));
-      if(maxX>W-8||minX<8){enemyDir*=-1;enemies.forEach(e=>{if(e.alive)e.y+=14;});}
-      if(alive.length>0){let by=Math.max(...alive.map(e=>e.y+e.h));if(by>=player.y){gameOver();return;}}
-    }
-    enemyShootTimer++;
-    if(enemyShootTimer>Math.max(25,80-wave*8)){
-      enemyShootTimer=0;
-      if(alive.length>0){let s=alive[Math.floor(Math.random()*alive.length)];enemyBullets.push({x:s.x+s.w/2-BW/2,y:s.y+s.h,vy:4+wave*0.6});}
-    }
-    bullets.forEach(b=>{
-      enemies.forEach(e=>{
-        if(!e.alive||b.y<-10)return;
-        if(b.x<e.x+e.w&&b.x+BW>e.x&&b.y<e.y+e.h&&b.y+BH>e.y){
-          e.alive=false;b.y=-200;
-          let pts=(e.type===2?30:e.type===1?20:10)*wave;
-          score+=pts;if(score>hiScore)hiScore=score;
-          explosions.push({x:e.x+e.w/2,y:e.y+e.h/2,r:20,t:0,maxT:18});
-          updateHUD();flashScore(e.x,e.y,'+'+pts);
-        }
-      });
-    });
-    enemyBullets.forEach(b=>{
-      if(player.invincible>0)return;
-      if(b.x<player.x+player.w&&b.x+BW>player.x&&b.y<player.y+player.h&&b.y+BH>player.y){
-        b.y=H+100;lives--;player.invincible=120;
-        explosions.push({x:player.x+player.w/2,y:player.y+player.h/2,r:24,t:0,maxT:22});
-        updateHUD();if(lives<=0){gameOver();return;}
+function buildMaze() {
+  grid = [];
+  for (let r = 0; r < ROWS; r++) {
+    grid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      // border walls
+      if (r === 0 || r === ROWS-1 || c === 0 || c === COLS-1) {
+        grid[r][c] = 1;
+      } else {
+        // inner walls: even rows/cols form a grid skeleton
+        grid[r][c] = (r % 2 === 0 && c % 2 === 0) ? 1 : 0;
       }
-    });
-    let remaining=enemies.filter(e=>e.alive);
-    if(remaining.length===0&&!waveTransitioning){
-      waveTransitioning=true;wave++;updateHUD();
-      setTimeout(()=>{spawnWave();showWaveBanner(wave,()=>{waveTransitioning=false;});},400);
     }
   }
-  bullets=bullets.filter(b=>b.y>-20);
-  enemyBullets=enemyBullets.filter(b=>b.y<H+20);
-  explosions.forEach(e=>e.t++);
-  explosions=explosions.filter(e=>e.t<e.maxT);
-  enemies.forEach(e=>{if(e.alive)drawEnemy(e);});
-  bullets.forEach(b=>{ctx.fillStyle='#FFFF00';ctx.fillRect(b.x,b.y,BW,BH);});
-  enemyBullets.forEach(b=>{ctx.fillStyle='#FF4400';ctx.fillRect(b.x,b.y,BW,BH+2);});
-  explosions.forEach(e=>drawExplosion(e));
-  drawPlayer(player);
-  ctx.fillStyle='rgba(0,255,0,0.12)';ctx.fillRect(0,H-2,W,2);
-  raf=requestAnimationFrame(loop);
-}
 
-function gameOver(){
-  state='gameover';cancelAnimationFrame(raf);
-  if(score>hiScore)hiScore=score;updateHUD();
-  let o=document.getElementById('msg-overlay');
-  o.style.display='flex';
-  o.innerHTML=`<div class="msg-title">GAME OVER</div>
-    <div class="msg-sub">SCORE: ${score}<br>HI-SCORE: ${hiScore}<br><br>WAVE REACHED: ${wave}</div>
-    <button class="arcade-btn gold blink" onclick="startNewGame()">▶ PLAY AGAIN (FREE)</button>`;
-}
-
-function startNewGame(){
-  document.getElementById('msg-overlay').style.display='none';
-  cancelAnimationFrame(raf);initGame();raf=requestAnimationFrame(loop);
-}
-
-function updateHUD(){
-  document.getElementById('score-disp').textContent=score;
-  document.getElementById('hi-disp').textContent=hiScore;
-  document.getElementById('wave-disp').textContent=wave;
-  let lr=document.getElementById('lives-row');lr.innerHTML='';
-  for(let i=0;i<lives;i++)lr.innerHTML+='<span class="life-ship">▲</span>';
-}
-
-function flashScore(x,y,txt){
-  let layer=document.getElementById('score-flash-layer');
-  let el=document.createElement('div');
-  el.style.cssText=`position:absolute;font-size:8px;color:#FFD700;font-family:'Press Start 2P',monospace;pointer-events:none;left:${x}px;top:${y-10}px;`;
-  el.textContent=txt;layer.appendChild(el);
-  let start=Date.now();
-  let anim=setInterval(()=>{
-    let t=(Date.now()-start)/600;el.style.transform=`translateY(${-20*t}px)`;el.style.opacity=1-t;
-    if(t>=1){clearInterval(anim);el.remove();}
-  },16);
-}
-
-document.addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' ')e.preventDefault();});
-document.addEventListener('keyup',e=>{keys[e.key]=false;});
-
-const sCanvas=document.getElementById('stars-canvas'),sCtx=sCanvas.getContext('2d');
-let starsList=Array.from({length:80},()=>({x:Math.random()*480,y:Math.random()*580,s:Math.random()*1.5+0.5,sp:Math.random()*0.3+0.1,b:Math.random()}));
-function animateStars(){
-  sCtx.clearRect(0,0,480,580);
-  starsList.forEach(s=>{
-    s.y+=s.sp;if(s.y>580){s.y=0;s.x=Math.random()*480;}
-    s.b+=0.02;sCtx.fillStyle=`rgba(255,255,255,${0.4+0.4*Math.sin(s.b)})`;
-    sCtx.fillRect(s.x,s.y,s.s,s.s);
-  });
-  requestAnimationFrame(animateStars);
-}
-animateStars();
-
-document.getElementById('insert-coin-btn').addEventListener('click',()=>{
-  document.getElementById('msg-overlay').style.display='none';
-  document.getElementById('payment-overlay').style.display='flex';
-  if(!stripe)initStripe();
-});
-
-document.getElementById('pay-now-btn').addEventListener('click',handlePayment);
-
-document.getElementById('admin-submit').addEventListener('click',()=>{
-  let val=document.getElementById('admin-input').value;
-  let msg=document.getElementById('admin-msg');
-  if(hashCode(val)===ADMIN_HASH){
-    msg.style.color='#0f0';msg.textContent='✓ ACCESS GRANTED';
-    setTimeout(()=>launchGame(),600);
-  } else {
-    msg.style.color='#f00';msg.textContent='✗ INVALID CODE';
-    document.getElementById('admin-input').value='';
-    setTimeout(()=>msg.textContent='',1500);
+  // Carve paths using randomised Prim's-style
+  let visited = [];
+  for (let r = 0; r < ROWS; r++) {
+    visited[r] = new Array(COLS).fill(false);
   }
+
+  function carve(r, c) {
+    visited[r][c] = true;
+    let dirs = [[0,2],[0,-2],[2,0],[-2,0]].sort(() => Math.random()-0.5);
+    for (let [dr, dc] of dirs) {
+      let nr = r+dr, nc = c+dc;
+      if (nr>0 && nr<ROWS-1 && nc>0 && nc<COLS-1 && !visited[nr][nc]) {
+        grid[r+dr/2][c+dc/2] = 0;
+        carve(nr, nc);
+      }
+    }
+  }
+  carve(1,1);
+
+  // Extra openings for complexity
+  for (let i = 0; i < 30 + level*4; i++) {
+    let r = 1 + Math.floor(Math.random()*(ROWS-2));
+    let c = 1 + Math.floor(Math.random()*(COLS-2));
+    grid[r][c] = 0;
+  }
+}
+
+function isOpen(r, c) {
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
+  return grid[r][c] === 0;
+}
+
+// ─── INIT LEVEL ───────────────────────────────────────────
+function initLevel() {
+  buildMaze();
+  playerX = 1; playerY = 1;
+  heat = 0;
+  pulseTimer = 0;
+  pulseActive = false;
+
+  // Nodes scattered in open cells
+  nodes = [];
+  let count = 20 + level * 5;
+  let tries = 0;
+  while (nodes.length < count && tries < 2000) {
+    tries++;
+    let r = 1 + Math.floor(Math.random()*(ROWS-2));
+    let c = 1 + Math.floor(Math.random()*(COLS-2));
+    if (isOpen(r,c) && !(r===1&&c===1) && !nodes.find(n=>n.r===r&&n.c===c)) {
+      nodes.push({r, c, type: Math.random()<0.15 ? 'super' : 'normal'});
+    }
+  }
+
+  // Drones
+  let droneCount = 2 + level;
+  drones = [];
+  let corners = [[ROWS-2,COLS-2],[ROWS-2,1],[1,COLS-2]];
+  for (let i = 0; i < Math.min(droneCount, corners.length); i++) {
+    drones.push({r: corners[i][0], c: corners[i][1], dir:[0,1], stuckTimer:0});
+  }
+  for (let i = corners.length; i < droneCount; i++) {
+    let r, c, t=0;
+    do { r=1+Math.floor(Math.random()*(ROWS-2)); c=1+Math.floor(Math.random()*(COLS-2)); t++; }
+    while ((!isOpen(r,c) || (Math.abs(r-1)+Math.abs(c-1)<5)) && t<500);
+    drones.push({r, c, dir:[0,1], stuckTimer:0});
+  }
+
+  moveInterval = overclocked ? 90 : 160 - level * 8;
+  if (moveInterval < 60) moveInterval = 60;
+  droneInterval = Math.max(200, 380 - level * 20);
+
+  flashParticles = [];
+  updateHUD();
+}
+
+// ─── MOVEMENT ─────────────────────────────────────────────
+let inputDir = [0,0];
+
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+
+  if (state !== 'playing') return;
+
+  if (e.code === 'Space') triggerPulse();
+
+  const map = {
+    'ArrowUp':[-1,0],'KeyW':[-1,0],
+    'ArrowDown':[1,0],'KeyS':[1,0],
+    'ArrowLeft':[0,-1],'KeyA':[0,-1],
+    'ArrowRight':[0,1],'KeyD':[0,1],
+  };
+  if (map[e.code]) inputDir = map[e.code];
 });
 
-document.getElementById('admin-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter')document.getElementById('admin-submit').click();
-});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
 
-document.getElementById('back-btn').addEventListener('click',()=>{
-  document.getElementById('payment-overlay').style.display='none';
-  document.getElementById('msg-overlay').style.display='flex';
-});
+function tryMove(dr, dc) {
+  let nr = playerY + dr, nc = playerX + dc;
+  if (isOpen(nr, nc)) {
+    playerY = nr;
+    playerX = nc;
+    return true;
+  }
+  return false;
+}
 
-ctx.clearRect(0,0,W,H);
+// ─── PULSE BLAST ──────────────────────────────────────────
+function triggerPulse() {
+  if (pulseActive) return;
+  pulseActive = true;
+  pulseTimer = 18;
+
+  let range = pulseRange;
+  let toRemove = [];
+  for (let d of drones) {
+    if (Math.abs(d.r - playerY) + Math.abs(d.c - playerX) <= range) {
+      toRemove.push(d);
+      spawnParticles(d.c, d.r, 6, '#ff4400');
+      score += 50;
+    }
+  }
+  drones = drones.filter(d => !toRemove.includes(d));
+  if (toRemove.length) showFlash(`DRONE PURGED x${toRemove.length}`);
+  // Respawn drones after a pause
+  setTimeout(() => {
+    for (let i = 0; i < toRemove.length; i++) {
+      let r, c, t=0;
+      do { r=1+Math.floor(Math.random()*(ROWS-2)); c=1+Math.floor(Math.random()*(COLS-2)); t++; }
+      while ((!isOpen(r,c)||(Math.abs(r-playerY)+Math.abs(c-playerX)<6))&&t<400);
+      drones.push({r,c,dir:[0,1],stuckTimer:0});
+    }
+  }, 4000);
+  updateHUD();
+}
+
+// ─── DRONE AI ─────────────────────────────────────────────
+function moveDrones() {
+  if (ghostActive) return;
+  const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+  for (let d of drones) {
+    // Simple chase: move toward player with some randomness
+    let best = null, bestDist = Infinity;
+    let options = dirs.filter(([dr,dc]) => isOpen(d.r+dr, d.c+dc));
+    if (options.length === 0) continue;
+
+    let chase = Math.random() < 0.65 + level * 0.03;
+    if (chase) {
+      for (let [dr,dc] of options) {
+        let dist = Math.abs((d.r+dr)-playerY) + Math.abs((d.c+dc)-playerX);
+        if (dist < bestDist) { bestDist = dist; best = [dr,dc]; }
+      }
+    } else {
+      best = options[Math.floor(Math.random()*options.length)];
+    }
+
+    if (best) { d.r += best[0]; d.c += best[1]; }
+
+    // Check collision with player
+    if (d.r === playerY && d.c === playerX) { hitPlayer(); return; }
+  }
+}
+
+// ─── EATING NODES ─────────────────────────────────────────
+function checkNodeEat() {
+  let idx = nodes.findIndex(n => n.r === playerY && n.c === playerX);
+  if (idx !== -1) {
+    let n = nodes[idx];
+    nodes.splice(idx, 1);
+    let pts = n.type === 'super' ? 50 : 10;
+    score += pts;
+    heat = Math.max(0, heat - (n.type === 'super' ? 8 : 3));
+    spawnParticles(playerX, playerY, 4, n.type === 'super' ? '#ffff00' : '#00ff41');
+    if (n.type === 'super') showFlash('SUPER NODE +50');
+    if (nodes.length === 0) triggerLevelComplete();
+    updateHUD();
+  }
+}
+
+// ─── HEAT SYSTEM ──────────────────────────────────────────
+function updateHeat(dt) {
+  // Heat rises when drones are close
+  for (let d of drones) {
+    let dist = Math.abs(d.r - playerY) + Math.abs(d.c - playerX);
+    if (dist <= 2) heat += dt * 0.025;
+    else if (dist <= 4) heat += dt * 0.008;
+  }
+  heat = Math.min(100, heat);
+  if (heat >= 100) hitPlayer();
+}
+
+// ─── HIT / DEATH ──────────────────────────────────────────
+function hitPlayer() {
+  if (ghostActive) return;
+  lives--;
+  spawnParticles(playerX, playerY, 12, '#ff0000');
+  showFlash('DETECTED — LIFE LOST');
+  heat = 0;
+
+  if (lives <= 0) {
+    setTimeout(gameOver, 600);
+    return;
+  }
+  // Respawn player safely
+  playerX = 1; playerY = 1;
+  // Push drones away
+  drones.forEach(d => { d.r = ROWS-2; d.c = COLS-2; });
+  updateHUD();
+}
+
+// ─── PARTICLES ────────────────────────────────────────────
+function spawnParticles(cx, cy, count, col) {
+  for (let i = 0; i < count; i++) {
+    let angle = Math.random() * Math.PI * 2;
+    let speed = 1 + Math.random() * 2;
+    flashParticles.push({
+      x: cx * CELL + CELL/2, y: cy * CELL + CELL/2,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+      life: 1, col
+    });
+  }
+}
+
+// ─── LEVEL / GAME OVER ────────────────────────────────────
+function triggerLevelComplete() {
+  state = 'levelcomplete';
+  score += level * 200;
+  document.getElementById('lv-num').textContent = `SECTOR ${level} CLEARED`;
+  document.getElementById('lv-msg').innerHTML = `SCORE: ${score}<br><br>DIVING DEEPER — SECURITY INCREASING`;
+  document.getElementById('level-screen').style.display = 'flex';
+  updateHUD();
+}
+
+function nextLevel() {
+  level++;
+  document.getElementById('level-screen').style.display = 'none';
+  state = 'playing';
+  initLevel();
+}
+
+function gameOver() {
+  state = 'gameover';
+  document.getElementById('go-score').textContent = `FINAL SCORE: ${score}`;
+  document.getElementById('go-msg').innerHTML =
+    `SECTOR: ${level} &nbsp;|&nbsp; NODES CONSUMED<br><br>` +
+    (score > 2000 ? 'EXCEPTIONAL BREACH — YOU WERE SO CLOSE' : 'VIRUS_X HAS BEEN SCRUBBED') +
+    '<br><br><span style="color:#005510;font-size:11px">TIP: VISIT THE SHOP TO UPGRADE BEFORE NEXT RUN</span>';
+  document.getElementById('gameover-screen').style.display = 'flex';
+  cancelAnimationFrame(animId);
+}
+
+// ─── GAME LOOP ────────────────────────────────────────────
+function startGame() {
+  score = 0; level = 1; lives = 3;
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('gameover-screen').style.display = 'none';
+  document.getElementById('level-screen').style.display = 'none';
+  state = 'playing';
+  initLevel();
+  lastTime = performance.now();
+  cancelAnimationFrame(animId);
+  loop(lastTime);
+}
+
+function loop(ts) {
+  animId = requestAnimationFrame(loop);
+  let dt = ts - lastTime;
+  lastTime = ts;
+  if (dt > 100) dt = 100;
+
+  if (state !== 'playing') return;
+
+  moveTimer += dt;
+  droneTimer += dt;
+
+  if (moveTimer >= moveInterval) {
+    moveTimer = 0;
+    if (inputDir[0] !== 0 || inputDir[1] !== 0) {
+      tryMove(inputDir[0], inputDir[1]);
+      checkNodeEat();
+    }
+  }
+
+  if (droneTimer >= droneInterval) {
+    droneTimer = 0;
+    moveDrones();
+    checkNodeEat();
+  }
+
+  // Timers
+  if (pulseActive) { pulseTimer -= dt/16; if(pulseTimer<=0) pulseActive = false; }
+  if (ghostActive) {
+    ghostTimer -= dt;
+    if (ghostTimer <= 0) { ghostActive = false; showFlash('GHOST MODE ENDED'); }
+  }
+
+  updateHeat(dt);
+  updateParticles(dt);
+  updateHUD();
+  render();
+}
+
+function updateParticles(dt) {
+  for (let p of flashParticles) {
+    p.x += p.vx * dt/16;
+    p.y += p.vy * dt/16;
+    p.life -= dt/600;
+  }
+  flashParticles = flashParticles.filter(p => p.life > 0);
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+function render() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  drawGrid();
+  drawNodes();
+  if (pulseActive) drawPulse();
+  drawParticles();
+  drawDrones();
+  drawPlayer();
+}
+
+function drawGrid() {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (grid[r][c] === 1) {
+        // Wall
+        ctx.fillStyle = '#001a06';
+        ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+        // Circuit border glow
+        ctx.strokeStyle = '#003d10';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(c*CELL+0.5, r*CELL+0.5, CELL-1, CELL-1);
+        // Tiny corner dots for circuit feel
+        ctx.fillStyle = '#005510';
+        ctx.fillRect(c*CELL+2, r*CELL+2, 2, 2);
+        ctx.fillRect(c*CELL+CELL-4, r*CELL+2, 2, 2);
+        ctx.fillRect(c*CELL+2, r*CELL+CELL-4, 2, 2);
+        ctx.fillRect(c*CELL+CELL-4, r*CELL+CELL-4, 2, 2);
+      } else {
+        // Open floor — faint grid lines
+        ctx.strokeStyle = '#001508';
+        ctx.lineWidth = 0.3;
+        ctx.strokeRect(c*CELL, r*CELL, CELL, CELL);
+      }
+    }
+  }
+}
+
+function drawNodes() {
+  for (let n of nodes) {
+    let x = n.c * CELL + CELL/2, y = n.r * CELL + CELL/2;
+    let t = performance.now() / 400;
+    let pulse = Math.sin(t + n.c + n.r) * 0.3 + 0.7;
+
+    if (n.type === 'super') {
+      ctx.fillStyle = `rgba(255,255,0,${pulse})`;
+      ctx.shadowColor = '#ffff00';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      // Diamond shape
+      ctx.moveTo(x, y-8); ctx.lineTo(x+8, y); ctx.lineTo(x, y+8); ctx.lineTo(x-8, y);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.fillStyle = `rgba(0,255,65,${pulse * 0.8})`;
+      ctx.shadowColor = '#00ff41';
+      ctx.shadowBlur = 6;
+      ctx.fillRect(x-4, y-4, 8, 8);
+    }
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawPlayer() {
+  let x = playerX * CELL + CELL/2, y = playerY * CELL + CELL/2;
+  let t = performance.now() / 200;
+
+  if (ghostActive) {
+    ctx.globalAlpha = 0.5 + Math.sin(t*3)*0.2;
+  }
+
+  // Outer pulsing halo — makes it pop against dark background
+  let halo = 0.5 + Math.sin(t*1.5)*0.3;
+  ctx.shadowColor = '#00ff41';
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = `rgba(0,255,65,${halo * 0.5})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y, 17, 0, Math.PI*2);
+  ctx.stroke();
+
+  // Second halo ring
+  ctx.strokeStyle = `rgba(0,255,65,${halo * 0.25})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x, y, 22, 0, Math.PI*2);
+  ctx.stroke();
+
+  ctx.shadowColor = '#00ff41';
+  ctx.shadowBlur = 28;
+
+  // Bright white-green filled hexagon body — much larger
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    let a = (i/6)*Math.PI*2 - Math.PI/2;
+    let r = 13;
+    if (i===0) ctx.moveTo(x+Math.cos(a)*r, y+Math.sin(a)*r);
+    else ctx.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  // Green overlay on hex
+  ctx.fillStyle = '#00ff41';
+  ctx.globalAlpha = ghostActive ? 0.5 : 0.85;
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    let a = (i/6)*Math.PI*2 - Math.PI/2;
+    let r = 13;
+    if (i===0) ctx.moveTo(x+Math.cos(a)*r, y+Math.sin(a)*r);
+    else ctx.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = ghostActive ? (0.5 + Math.sin(t*3)*0.2) : 1;
+
+  // Black inner core
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, Math.PI*2);
+  ctx.fill();
+
+  // Bright green dot at centre
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(x, y, 2.5, 0, Math.PI*2);
+  ctx.fill();
+
+  // 4 rotating spikes — very visible
+  ctx.shadowColor = '#00ff41';
+  ctx.shadowBlur = 12;
+  ctx.strokeStyle = '#00ff41';
+  ctx.lineWidth = 2.5;
+  for (let i = 0; i < 4; i++) {
+    let a = t + (i/4)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(x + Math.cos(a)*6, y + Math.sin(a)*6);
+    ctx.lineTo(x + Math.cos(a)*14, y + Math.sin(a)*14);
+    ctx.stroke();
+  }
+
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+}
+
+function drawDrones() {
+  for (let d of drones) {
+    let x = d.c * CELL + CELL/2, y = d.r * CELL + CELL/2;
+    let t = performance.now() / 300;
+
+    ctx.shadowColor = '#ff2200';
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = '#ff2200';
+    ctx.lineWidth = 1.5;
+
+    // Square security drone
+    let s = 8;
+    ctx.strokeRect(x-s, y-s, s*2, s*2);
+
+    // Inner cross
+    ctx.beginPath();
+    ctx.moveTo(x-s, y); ctx.lineTo(x+s, y);
+    ctx.moveTo(x, y-s); ctx.lineTo(x, y+s);
+    ctx.stroke();
+
+    // Rotating scanner
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(t)*s*1.4, y + Math.sin(t)*s*1.4);
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // Detection radius visible when close to player
+    let dist = Math.abs(d.r - playerY) + Math.abs(d.c - playerX);
+    if (dist <= 4 && !ghostActive) {
+      ctx.strokeStyle = `rgba(255,34,0,${0.15 + (4-dist)*0.07})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(x, y, dist <= 2 ? CELL*2 : CELL*3.5, 0, Math.PI*2);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawPulse() {
+  let x = playerX * CELL + CELL/2, y = playerY * CELL + CELL/2;
+  let r = pulseRange * CELL + (18 - pulseTimer) * 4;
+  ctx.strokeStyle = `rgba(0,255,65,${pulseTimer/18 * 0.8})`;
+  ctx.lineWidth = 3;
+  ctx.shadowColor = '#00ff41';
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawParticles() {
+  for (let p of flashParticles) {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.col;
+    ctx.fillRect(p.x-2, p.y-2, 4, 4);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ─── HUD ──────────────────────────────────────────────────
+function updateHUD() {
+  document.getElementById('score-disp').textContent = score;
+  document.getElementById('level-disp').textContent = level;
+  document.getElementById('lives-disp').textContent = '♦'.repeat(Math.max(0,lives));
+  let h = Math.floor(heat);
+  let el = document.getElementById('heat-disp');
+  el.textContent = h + '%';
+  el.style.color = h > 70 ? '#ff2200' : h > 40 ? '#ffaa00' : '#00ff41';
+}
+
+// ─── FLASH MESSAGE ────────────────────────────────────────
+let flashTimeout;
+function showFlash(msg) {
+  let el = document.getElementById('flash');
+  el.textContent = msg;
+  el.style.opacity = 1;
+  clearTimeout(flashTimeout);
+  flashTimeout = setTimeout(() => { el.style.opacity = 0; }, 1400);
+}
+
+// ─── SHOP ─────────────────────────────────────────────────
+function openTutorial() {
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('tutorial-screen').style.display = 'flex';
+}
+function closeTutorial() {
+  document.getElementById('tutorial-screen').style.display = 'none';
+  document.getElementById('title-screen').style.display = 'flex';
+}
+
+function openShop() {
+  document.getElementById('shop-modal').style.display = 'flex';
+}
+function closeShop() {
+  document.getElementById('shop-modal').style.display = 'none';
+}
+
+async function purchase(item, price) {
+  try {
+    showFlash('CONNECTING TO STRIPE...');
+    const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item, price })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showFlash('ERROR — TRY AGAIN');
+    }
+  } catch(e) {
+    // Dev mode fallback — simulate purchase
+    showFlash('BACKEND NOT SET UP YET');
+    console.error(e);
+  }
+}
+
+// Handle Stripe return
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('success') === 'true') {
+  const item = urlParams.get('item');
+  if (item === 'shield_core') { lives += 1; showFlash('SHIELD CORE ACTIVATED!'); }
+  if (item === 'pulse_x3') { pulseRange = 3; showFlash('PULSE RANGE TRIPLED!'); }
+  if (item === 'ghost_mode') { ghostActive = true; ghostTimer = 30000; showFlash('GHOST MODE: 30 SEC'); }
+  if (item === 'overclock') { overclocked = true; showFlash('OVERCLOCK ACTIVE!'); }
+  window.history.replaceState({}, '', '/');
+}
+if (urlParams.get('cancelled') === 'true') {
+  showFlash('PURCHASE CANCELLED');
+  window.history.replaceState({}, '', '/');
+}
+
+// Mobile touch controls
+let touchStartX = 0, touchStartY = 0;
+canvas.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive:true});
+canvas.addEventListener('touchend', e => {
+  let dx = e.changedTouches[0].clientX - touchStartX;
+  let dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { triggerPulse(); return; }
+  if (Math.abs(dx) > Math.abs(dy)) inputDir = [0, dx > 0 ? 1 : -1];
+  else inputDir = [dy > 0 ? 1 : -1, 0];
+}, {passive:true});
 </script>
 </body>
 </html>
