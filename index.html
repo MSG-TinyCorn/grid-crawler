@@ -444,6 +444,7 @@ canvas {
   <div style="font-family:'VT323',monospace;font-size:20px;color:#005510;letter-spacing:2px;margin-bottom:8px;" id="go-hiscore"></div>
   <button class="big-btn" onclick="startGame()">▶ RETRY BREACH</button>
   <button class="big-btn secondary" onclick="openShop()">⚡ SHOP UPGRADES</button>
+  <button class="big-btn secondary" onclick="goHome()">⌂ MAIN MENU</button>
 </div>
 
 <!-- LEVEL COMPLETE SCREEN -->
@@ -1158,6 +1159,15 @@ function showFlash(msg) {
 }
 
 // ─── SHOP ─────────────────────────────────────────────────
+function goHome() {
+  cancelAnimationFrame(animId);
+  state = 'title';
+  document.getElementById('gameover-screen').style.display = 'none';
+  document.getElementById('level-screen').style.display = 'none';
+  document.getElementById('title-screen').style.display = 'flex';
+  updateHiScoreDisplay();
+}
+
 function openTutorial() {
   document.getElementById('title-screen').style.display = 'none';
   document.getElementById('tutorial-screen').style.display = 'flex';
