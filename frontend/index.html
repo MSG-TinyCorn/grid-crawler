@@ -439,7 +439,12 @@ canvas {
   <h2 id="go-score" style="color:#00ff41"></h2>
   <p id="go-msg"></p>
   <div style="font-family:'VT323',monospace;font-size:20px;color:#005510;letter-spacing:2px;margin-bottom:8px;" id="go-hiscore"></div>
-  <button class="big-btn" onclick="startGame()">▶ RETRY BREACH</button>
+  <div style="border:1px solid #005510;padding:10px 20px;margin-bottom:10px;text-align:center;background:#001a06;">
+    <div style="font-size:10px;color:#00aa2a;letter-spacing:2px;margin-bottom:4px;">CONTINUE FROM SECTOR <span id="continue-level-gc"></span>?</div>
+    <div style="font-family:'VT323',monospace;font-size:26px;color:#00ff41;margin-bottom:6px;">£0.30</div>
+    <button class="big-btn" onclick="gcContinue()" style="background:#00ff41;color:#000;margin:0;">▶ CONTINUE</button>
+  </div>
+  <button class="big-btn" onclick="startGame()">↺ RETRY BREACH</button>
   <button class="big-btn secondary" onclick="openShop()">⚡ SHOP UPGRADES</button>
   <button class="big-btn secondary" onclick="goHome()">⌂ MAIN MENU</button>
 </div>
@@ -920,6 +925,8 @@ function gameOver() {
   state = 'gameover';
   sfx_gameover();
   saveHiScore(score);
+  let cl = document.getElementById('continue-level-gc');
+  if(cl) cl.textContent = level;
   updateHiScoreDisplay();
   document.getElementById('go-score').textContent = `FINAL SCORE: ${score}`;
   let hi = getHiScore();
@@ -1228,6 +1235,20 @@ function showFlash(msg) {
 }
 
 // ─── SHOP ─────────────────────────────────────────────────
+async function gcContinue() {
+  try {
+    showFlash('CONNECTING TO STRIPE...');
+    const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item: 'continue', price: 0.30, playerId: PLAYER_ID })
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else showFlash('ERROR — TRY AGAIN');
+  } catch(e) { showFlash('CONNECTION ERROR'); }
+}
+
 function goHome() {
   cancelAnimationFrame(animId);
   state = 'title';
@@ -1275,7 +1296,20 @@ async function purchase(item, price) {
 
 // Handle Stripe return — save purchase to MongoDB then apply it
 const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('success') === 'true') {
+if (urlParams.get('success') === 'true' && urlParams.get('item') === 'continue') {
+  // Restore lives and continue
+  lives = 3;
+  document.getElementById('gameover-screen').style.display = 'none';
+  state = 'playing';
+  initLevel();
+  lastTime = performance.now();
+  cancelAnimationFrame(animId);
+  loop(lastTime);
+  showFlash('STATION RESTORED — CONTINUE!');
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+if (urlParams.get('success') === 'true' && urlParams.get('item') !== 'continue') {
   const item = urlParams.get('item');
   const pid = urlParams.get('playerId') || PLAYER_ID;
   // Save to MongoDB so it persists forever
@@ -1290,6 +1324,7 @@ if (urlParams.get('success') === 'true') {
   applyPurchase(item, true);
   window.history.replaceState({}, '', window.location.pathname);
 }
+
 if (urlParams.get('cancelled') === 'true') {
   showFlash('PURCHASE CANCELLED');
   window.history.replaceState({}, '', window.location.pathname);
