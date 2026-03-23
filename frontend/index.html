@@ -296,6 +296,38 @@ canvas {
 }
 
 /* FLASH MESSAGE */
+/* MOBILE D-PAD */
+#dpad {
+  display:none;
+  position:fixed;
+  bottom:70px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:800;
+  width:150px;
+  height:150px;
+}
+.dpad-btn {
+  position:absolute;
+  width:46px;height:46px;
+  background:rgba(0,255,65,0.15);
+  border:2px solid #005510;
+  color:#00ff41;
+  font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  border-radius:4px;
+  -webkit-tap-highlight-color:transparent;
+}
+.dpad-btn:active { background:rgba(0,255,65,0.4);border-color:#00ff41; }
+#dpad-up    { top:0;    left:52px; }
+#dpad-down  { bottom:0; left:52px; }
+#dpad-left  { top:52px; left:0;    }
+#dpad-right { top:52px; right:0;   }
+#dpad-pulse { top:52px; left:52px; font-size:14px; background:rgba(0,255,65,0.2); border-color:#00aa2a; }
+@media (min-width:701px) { #dpad { display:none !important; } }
+@media (max-width:700px) { #dpad { display:block; } }
+
 #flash {
   position:fixed;
   top:60px;
@@ -561,9 +593,15 @@ loadPurchases();
 
 // ─── SOUND ENGINE ─────────────────────────────────────────
 const AC = new (window.AudioContext || window.webkitAudioContext)();
-function resumeAC(){ if(AC.state==='suspended') AC.resume(); }
-document.addEventListener('keydown', resumeAC, {once:true});
-document.addEventListener('click', resumeAC, {once:true});
+function resumeAC(){
+  if(AC.state==='suspended'||AC.state==='interrupted') AC.resume();
+}
+// Resume on ANY interaction immediately
+['keydown','mousedown','touchstart','pointerdown'].forEach(ev=>{
+  document.addEventListener(ev, resumeAC);
+});
+// Also try to resume right away
+resumeAC();
 
 function beep(freq, type, duration, vol, fadeOut){
   try {
@@ -1330,6 +1368,9 @@ if (urlParams.get('cancelled') === 'true') {
   window.history.replaceState({}, '', window.location.pathname);
 }
 
+function setDir(dr, dc) { inputDir = [dr, dc]; }
+function clearDir() { inputDir = [0, 0]; }
+
 // Mobile touch controls
 let touchStartX = 0, touchStartY = 0;
 canvas.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive:true});
@@ -1341,5 +1382,12 @@ canvas.addEventListener('touchend', e => {
   else inputDir = [dy > 0 ? 1 : -1, 0];
 }, {passive:true});
 </script>
+<div id="dpad" style="display:none;">
+  <div class="dpad-btn" id="dpad-up"    ontouchstart="setDir(-1,0)" ontouchend="clearDir()">▲</div>
+  <div class="dpad-btn" id="dpad-down"  ontouchstart="setDir(1,0)"  ontouchend="clearDir()">▼</div>
+  <div class="dpad-btn" id="dpad-left"  ontouchstart="setDir(0,-1)" ontouchend="clearDir()">◀</div>
+  <div class="dpad-btn" id="dpad-right" ontouchstart="setDir(0,1)"  ontouchend="clearDir()">▶</div>
+  <div class="dpad-btn" id="dpad-pulse" ontouchstart="triggerPulse()">⚡</div>
+</div>
 </body>
 </html>
